@@ -2,7 +2,6 @@ package battleship.services;
 
 import battleship.beans.Cell;
 import battleship.beans.PlayableShip;
-import battleship.beans.ShipsVisibility;
 import battleship.board.Board;
 import battleship.utils.ListUtils;
 
@@ -11,8 +10,6 @@ import java.util.List;
 
 public class ShootingService {
 
-    private final Board board;
-
     private final ShipPlacementService placementService;
 
     private final UserInputService inputService;
@@ -20,7 +17,6 @@ public class ShootingService {
     private final List<Cell> field;
 
     public ShootingService(Board board) {
-        this.board = board;
         this.field = ListUtils.flatten(board.getField());
         this.placementService = board.getPlacementService();
         this.inputService = new UserInputService();
@@ -55,9 +51,7 @@ public class ShootingService {
         if (shipHit) {
             ship.hit(cell);
         }
-
-        board.print(ShipsVisibility.HIDDEN);
-        String message = null;
+        String message;
         if (shipHit && ship.isDestroyed()) {
             message = "You sank a ship!";
         } else if (shipHit) {
@@ -65,8 +59,7 @@ public class ShootingService {
         } else {
             message = "You missed";
         }
-        System.out.printf("%s\n\n", message);
-//        board.print(ShipsVisibility.VISIBLE);
+        System.out.printf("%s", message);
         return true;
     }
 

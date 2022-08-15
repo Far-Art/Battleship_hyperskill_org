@@ -4,7 +4,6 @@ import battleship.board.Board;
 
 import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Set;
 
 public class Ship implements PlayableShip {
     private ShipCategory category;

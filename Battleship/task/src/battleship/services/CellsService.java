@@ -96,6 +96,6 @@ public class CellsService {
     }
 
     public enum CellOffset {
-        TOP, BOTTOM, LEFT, RIGHT;
+        TOP, BOTTOM, LEFT, RIGHT
     }
 }

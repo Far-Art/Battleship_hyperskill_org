@@ -1,37 +1,22 @@
 package battleship;
 
-import battleship.beans.ShipsVisibility;
+import battleship.beans.Player;
 import battleship.board.Board;
-import battleship.services.StubService;
+import battleship.services.PlayerService;
 
 public class Main {
-
-    private Board board = new Board();
-
-    private StubService stub = new StubService(board);
 
     public static void main(String[] args) {
         Main main = new Main();
         main.play();
     }
 
-
     private void play() {
-//        initShipsByStubService();
-        initShipsByUser();
-        board.printGameStartText();
-        board.print(ShipsVisibility.HIDDEN);
-        while (!board.gameIsFinished()) {
-            board.takeShot();
-        }
-        board.printWinText();
+        Player player1 = new Player("Player 1", new Board());
+        Player player2 = new Player("Player 2", new Board());
+
+        PlayerService playerService = new PlayerService(player1, player2);
+        playerService.startGame();
     }
 
-    private void initShipsByUser() {
-        board.getGameShipPattern().forEach(board::addShip);
-    }
-
-    private void initShipsByStubService() {
-        stub.placeShips();
-    }
 }

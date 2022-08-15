@@ -47,6 +47,10 @@ public class Board {
         return gameShipPattern;
     }
 
+    public ShootingService getShootingService() {
+        return shootingService;
+    }
+
     public List<Set<Cell>> getField() {
         return field;
     }
@@ -63,15 +67,6 @@ public class Board {
         }
     }
 
-    public void takeShot() {
-        shootingService.shoot();
-    }
-
-    public void addShip(ShipCategory ship) {
-        this.shipLocations = placementService.addShipToField(ship);
-        print(ShipsVisibility.VISIBLE);
-    }
-
     public void addShip(PlayableShip ship) {
         this.shipLocations = placementService.addShipToField(ship.getCategory(), ship.getLocationCells());
         print(ShipsVisibility.VISIBLE);
@@ -81,9 +76,9 @@ public class Board {
         StringBuilder builder = new StringBuilder();
         builder.append(getFieldRowAsString(field.get(0), true, visibility));
         builder.append(System.lineSeparator());
-        for (Set<Cell> cells : field) {
-            builder.append(getFieldRowAsString(cells, false, visibility));
-            builder.append(System.lineSeparator());
+        for (int i = 0; i < field.size(); i++) {
+            builder.append(getFieldRowAsString(field.get(i), false, visibility));
+            if (i + 1 < field.size()) builder.append(System.lineSeparator());
         }
         System.out.println(builder);
     }
@@ -109,13 +104,6 @@ public class Board {
         return this.placementService;
     }
 
-    public void printGameStartText() {
-        System.out.println("The game starts!\n");
-    }
-
-    public void printWinText() {
-        System.out.println("You sank the last ship. You won. Congratulations!\n");
-    }
 
     private String getFieldRowAsString(Set<Cell> row, boolean isFirst, ShipsVisibility visibility) {
         StringBuilder builder = new StringBuilder(isFirst ? "  " : row.stream().findFirst().get().getRow() + " ");
@@ -123,9 +111,5 @@ public class Board {
         else
             builder.append(row.stream().map(c -> c.getSymbol().equals(shipCell) && visibility == ShipsVisibility.HIDDEN ? fogOfWar : c.getSymbol()).collect(Collectors.joining(" ")));
         return builder.toString();
-    }
-
-    public boolean gameIsFinished() {
-        return shipLocations.stream().allMatch(c -> hitCell.equals(c.getSymbol()));
     }
 }

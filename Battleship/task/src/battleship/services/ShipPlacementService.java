@@ -7,15 +7,16 @@ import battleship.beans.ShipCategory;
 import battleship.board.Board;
 import battleship.utils.ListUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.InputMismatchException;
+import java.util.List;
 
 import static battleship.services.CellsService.getCellRange;
 import static battleship.services.CellsService.stringToCell;
 import static battleship.utils.ListUtils.containsAny;
 
 public class ShipPlacementService {
-
-    private final List<ShipCategory> available;
 
     private final List<Cell> field;
 
@@ -30,10 +31,13 @@ public class ShipPlacementService {
     private final UserInputService inputService;
 
     public ShipPlacementService(Board board, CellsService cellsService) {
-        this.available = board.getGameShipPattern();
         this.field = ListUtils.flatten(board.getField());
         this.cellsService = cellsService;
         this.inputService = new UserInputService();
+    }
+
+    public List<PlayableShip> getShipsOnField() {
+        return shipsOnField;
     }
 
     public List<Cell> getShipLocations() {

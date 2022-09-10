@@ -1,17 +1,19 @@
-package org.hyperskill.Battleship.services.impl;
+package org.hyperskill.Battleship.components;
 
 import org.hyperskill.Battleship.beans.*;
 import org.hyperskill.Battleship.config.GameConfig;
+import org.hyperskill.Battleship.services.impl.UserInputService;
 import org.hyperskill.Battleship.services.interfaces.CellService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Service
-public class ShipPlacementService {
+@Component
+@Scope("prototype")
+public class ShipPlacementComponent {
 
     private final GameConfig config;
     private final UserInputService inputService;
@@ -29,8 +31,7 @@ public class ShipPlacementService {
     private final CellService cellService;
 
 
-    @Autowired
-    public ShipPlacementService(GameConfig config, UserInputService inputService, CellService cellService) {
+    public ShipPlacementComponent(GameConfig config, UserInputService inputService, CellService cellService) {
         this.config = config;
         this.inputService = inputService;
         this.cellService = cellService;

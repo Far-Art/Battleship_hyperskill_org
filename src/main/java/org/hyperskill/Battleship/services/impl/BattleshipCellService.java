@@ -6,7 +6,6 @@ import org.hyperskill.Battleship.beans.Cell;
 import org.hyperskill.Battleship.config.GameConfig;
 import org.hyperskill.Battleship.services.interfaces.CellService;
 import org.hyperskill.Battleship.utils.ListUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,16 +15,14 @@ import java.util.List;
 @Service
 public class BattleshipCellService implements CellService {
 
-    private final GameConfig config;
     private final Cell firstCell;
     private final Cell lastCell;
     private final int boardSize;
     private final String seaSymbol;
 
 
-    @Autowired
+
     public BattleshipCellService(GameConfig config) {
-        this.config = config;
         this.boardSize = config.getBoarsSize();
         this.seaSymbol = config.getSymbolSea();
         this.firstCell = new Cell(config.getFirstRow(), config.getFirstColumn());

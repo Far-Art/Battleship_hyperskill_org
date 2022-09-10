@@ -4,7 +4,7 @@ import org.hyperskill.Battleship.beans.Board;
 import org.hyperskill.Battleship.beans.Player;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 
 @Configuration
 public class PlayerConfig {
@@ -14,7 +14,7 @@ public class PlayerConfig {
     private static String initialName = "Player";
 
     @Bean
-    @Primary
+    @Scope("prototype")
     public Player getPlayer(Board board) {
         return new Player(playerNumber, initialName + playerNumber++, board);
     }

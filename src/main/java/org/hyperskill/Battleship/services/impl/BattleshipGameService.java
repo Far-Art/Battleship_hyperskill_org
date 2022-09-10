@@ -2,7 +2,6 @@ package org.hyperskill.Battleship.services.impl;
 
 import org.hyperskill.Battleship.beans.Player;
 import org.hyperskill.Battleship.config.GameConfig;
-import org.hyperskill.Battleship.services.interfaces.CellService;
 import org.hyperskill.Battleship.services.interfaces.GameService;
 import org.hyperskill.Battleship.services.interfaces.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class BattleshipGameService implements GameService {
 
-    private final GameConfig config;
     private final String inputPlaceholder;
 
     private final String separator;
@@ -22,19 +20,13 @@ public class BattleshipGameService implements GameService {
 
     private final int maxPlayers;
 
-    private final CellService cellService;
-
     private final PlayerService playerService;
 
     private Player currentPlayer;
 
-//    private final ShipPlacementService placementService;
-
     @Autowired
-    public BattleshipGameService(GameConfig config, UserInputService inputService, CellService cellService, PlayerService playerService) {
-        this.config = config;
+    public BattleshipGameService(GameConfig config, UserInputService inputService, PlayerService playerService) {
         this.inputService = inputService;
-        this.cellService = cellService;
         this.playerService = playerService;
         this.inputPlaceholder = UserInputService.userInputPlaceholder;
         this.separator = UserInputService.lineSeparator;
@@ -42,11 +34,6 @@ public class BattleshipGameService implements GameService {
         this.maxPlayers = config.getMaxPlayers();
     }
 
-    @Override
-    public void startGame() {
-        initPlayers();
-        initShips();
-    }
 
     @Override
     public void initPlayers() {
@@ -68,7 +55,10 @@ public class BattleshipGameService implements GameService {
             System.out.printf("\n%s enter your name\n%s", currentPlayer.getName(), inputPlaceholder);
             String name = inputService.getInput();
             name = name.strip().isBlank() ? currentPlayer.getName() : name;
-            System.out.println(String.format("%s name set to %s", currentPlayer.getName(), name));
+            boolean nameChanged = !name.equals(currentPlayer.getName());
+            String changed = "set to";
+            String unchaged = "unchanged";
+            System.out.println(String.format("* %s name %s %s", currentPlayer.getName(), nameChanged ? changed : unchaged, nameChanged ? name : ""));
             currentPlayer.setName(name);
             currentPlayer = playerService.getNextPlayer();
         }
@@ -84,5 +74,14 @@ public class BattleshipGameService implements GameService {
             playerService.initShipsForPlayer(currentPlayer);
             currentPlayer = playerService.getNextPlayer();
         }
+    }
+
+    @Override
+    public void play() {
+        boolean isFinished = true;
+        while (!isFinished) {
+            // TODO implement game
+        }
+        System.out.println("game finished");
     }
 }

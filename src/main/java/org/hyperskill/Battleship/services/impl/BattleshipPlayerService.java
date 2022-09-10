@@ -3,10 +3,9 @@ package org.hyperskill.Battleship.services.impl;
 import org.hyperskill.Battleship.beans.Board;
 import org.hyperskill.Battleship.beans.Player;
 import org.hyperskill.Battleship.beans.ShipType;
+import org.hyperskill.Battleship.components.ShipPlacementComponent;
 import org.hyperskill.Battleship.config.GameConfig;
-import org.hyperskill.Battleship.services.interfaces.CellService;
 import org.hyperskill.Battleship.services.interfaces.PlayerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -20,24 +19,24 @@ public class BattleshipPlayerService implements PlayerService {
 
     private final GameConfig config;
     private final UserInputService inputService;
-    private final ShipPlacementService placementService;
+    private final ShipPlacementComponent shipPlacement;
     private final int minPlayers;
     private final int maxPlayers;
     private final int startingCountNum = 1;
     private final Map<Integer, Player> players;
-    @Autowired
-    private ApplicationContext context;
+    private final ApplicationContext context;
     private int numOfLostPlayers;
     private int numOfPlayers;
     private Player currentTurnPlayer;
 
-    @Autowired
-    public BattleshipPlayerService(GameConfig config, UserInputService inputService, CellService cellService, ShipPlacementService placementService) {
+
+    public BattleshipPlayerService(GameConfig config, UserInputService inputService, ShipPlacementComponent shipPlacement, ApplicationContext context) {
         this.config = config;
         this.inputService = inputService;
-        this.placementService = placementService;
+        this.shipPlacement = shipPlacement;
         this.minPlayers = config.getMinPlayers();
         this.maxPlayers = config.getMaxPlayers();
+        this.context = context;
         this.players = new HashMap<>(maxPlayers);
     }
 
@@ -85,7 +84,7 @@ public class BattleshipPlayerService implements PlayerService {
         Board board = player.getBoard();
         List<ShipType> shipTypes = board.getGameShipPattern();
         for (ShipType shipType : shipTypes) {
-            placementService.addShipToBoard(shipType, board);
+            shipPlacement.addShipToBoard(shipType, board);
         }
     }
 }

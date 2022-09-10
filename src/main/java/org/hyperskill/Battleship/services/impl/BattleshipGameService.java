@@ -54,11 +54,9 @@ public class BattleshipGameService implements GameService {
         for (int i = 0; i < playerService.getNumOfPlayers(); i++) {
             System.out.printf("\n%s enter your name\n%s", currentPlayer.getName(), inputPlaceholder);
             String name = inputService.getInput();
-            name = name.strip().isBlank() ? currentPlayer.getName() : name;
+            name = name.isBlank() ? currentPlayer.getName().strip() : name.strip();
             boolean nameChanged = !name.equals(currentPlayer.getName());
-            String changed = "set to";
-            String unchaged = "unchanged";
-            System.out.println(String.format("* %s name %s %s", currentPlayer.getName(), nameChanged ? changed : unchaged, nameChanged ? name : ""));
+            System.out.println(String.format("* %s name %s %s", currentPlayer.getName(), nameChanged ? "set to" : "unchanged", nameChanged ? name : ""));
             currentPlayer.setName(name);
             currentPlayer = playerService.getNextPlayer();
         }

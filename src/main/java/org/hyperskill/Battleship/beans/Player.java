@@ -7,7 +7,7 @@ public class Player {
 
     private final ShipPlacementComponent placement;
 
-    private int playerId;
+    private final int playerId;
 
     private String name;
 
@@ -25,10 +25,6 @@ public class Player {
         return playerId;
     }
 
-    public void setPlayerId(int playerId) {
-        this.playerId = playerId;
-    }
-
     public String getName() {
         return name;
     }
@@ -43,5 +39,15 @@ public class Player {
 
     public ShipPlacementComponent placement() {
         return placement;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Player{");
+        sb.append("playerId=").append(playerId);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", isLost=").append(isLost);
+        sb.append('}');
+        return sb.toString();
     }
 }

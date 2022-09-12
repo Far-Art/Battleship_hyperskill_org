@@ -8,13 +8,10 @@ import java.util.Scanner;
 @Service
 public class UserInputService {
 
-    public final static String userInputPlaceholder = "> ";
-
     public final static String newLine = System.lineSeparator();
-
     public final static String lineSeparator = "---------------------------------------------------------------------------------";
-
     public final static String verticalDots;
+    private final static String userInputPlaceholder = "> ";
 
     static {
         StringBuilder builder = new StringBuilder();
@@ -31,7 +28,10 @@ public class UserInputService {
             public void close() {
             }
         })) {
-            return scanner.nextLine();
+            System.out.print(userInputPlaceholder);
+            String input = scanner.nextLine();
+            System.out.println();
+            return input;
         }
     }
 }

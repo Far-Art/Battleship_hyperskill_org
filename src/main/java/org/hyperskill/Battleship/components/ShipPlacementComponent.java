@@ -65,7 +65,7 @@ public class ShipPlacementComponent {
             addValidShip(new BattleShip(config, shipType, location));
         } else {
             // TODO implement retry service
-            System.out.printf("Enter the coordinates of the %s (%d cells):\n%s", shipType.getName(), shipType.getSize(), UserInputService.userInputPlaceholder);
+            System.out.printf("Enter the coordinates of the %s (%d cells):\n", shipType.getName(), shipType.getSize()/*, UserInputService.userInputPlaceholder*/);
             String userInput = inputService.getInput();
             boolean validShipLoc = false;
             while (!validShipLoc) {
@@ -82,7 +82,7 @@ public class ShipPlacementComponent {
                         }
                     }
                 } catch (Exception e) {
-                    System.out.printf("Error! %s Try again: \n%s", e.getMessage(), UserInputService.userInputPlaceholder);
+                    System.out.printf("Error! %s Try again: \n", e.getMessage()/*, UserInputService.userInputPlaceholder*/);
                     userInput = inputService.getInput();
                 }
             }

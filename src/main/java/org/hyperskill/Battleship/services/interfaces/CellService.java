@@ -2,6 +2,7 @@ package org.hyperskill.Battleship.services.interfaces;
 
 import org.hyperskill.Battleship.beans.Board;
 import org.hyperskill.Battleship.beans.Cell;
+import org.hyperskill.Battleship.beans.Offset;
 
 import java.util.List;
 
@@ -18,15 +19,14 @@ public interface CellService {
         return String.valueOf((char) code);
     }
 
-    Cell toCell(String cell);
+    Cell stringToCell(String cell);
 
-    Cell getAdjacentCell(Cell cell, CellService.CellOffset position);
+    String cellToString(Cell cell);
 
-    List<List<Cell>> createBoardCells();
+    Cell getAdjacent(Cell cell, Board board, Offset offset);
 
-    List<Cell> getCellRangeFromBoard(Cell start, Cell end, Board board);
+    List<List<Cell>> createBoardField();
 
-    public enum CellOffset {
-        TOP, BOTTOM, LEFT, RIGHT
-    }
+    List<Cell> getRange(Cell start, Cell end, Board board);
+
 }

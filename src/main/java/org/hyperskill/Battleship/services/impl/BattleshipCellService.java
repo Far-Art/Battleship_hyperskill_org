@@ -3,6 +3,7 @@ package org.hyperskill.Battleship.services.impl;
 import org.hyperskill.Battleship.beans.Axis;
 import org.hyperskill.Battleship.beans.Board;
 import org.hyperskill.Battleship.beans.Cell;
+import org.hyperskill.Battleship.beans.Offset;
 import org.hyperskill.Battleship.config.GameConfig;
 import org.hyperskill.Battleship.services.interfaces.CellService;
 import org.hyperskill.Battleship.utils.ListUtils;
@@ -21,7 +22,6 @@ public class BattleshipCellService implements CellService {
     private final String seaSymbol;
 
 
-
     public BattleshipCellService(GameConfig config) {
         this.boardSize = config.getBoarsSize();
         this.seaSymbol = config.getSymbolSea();
@@ -32,23 +32,18 @@ public class BattleshipCellService implements CellService {
     }
 
     @Override
-    public Cell getAdjacentCell(Cell cell, CellService.CellOffset position) {
-        switch (position) {
-            case TOP:
-                return getAdjacentTopCell(cell);
-            case BOTTOM:
-                return getAdjacentBottomCell(cell);
-            case RIGHT:
-                return getAdjacentRightCell(cell);
-            case LEFT:
-                return getAdjacentLeftCell(cell);
-            default:
-                return null;
-        }
+    public Cell stringToCell(String cell) {
+        return new Cell(cell.substring(0, 1), cell.substring(1));
     }
 
     @Override
-    public List<List<Cell>> createBoardCells() {
+    public String cellToString(Cell cell) {
+        return cell != null ? cell.getRow() + cell.getColumn() : null;
+    }
+
+
+    @Override
+    public List<List<Cell>> createBoardField() {
         List<List<Cell>> boardCells = new ArrayList<>(boardSize);
         for (int i = 0; i < boardSize; i++) {
             String rowSymbol = charToString(toCharCode(firstCell.getRow()) + i);
@@ -58,8 +53,31 @@ public class BattleshipCellService implements CellService {
     }
 
     @Override
-    public List<Cell> getCellRangeFromBoard(Cell start, Cell end, Board board) {
+    public Cell getAdjacent(Cell cell, Board board, Offset offset) {
+        switch (offset) {
+            case TOP:
+                return getAdjacentTopCell(cell, board);
+            case BOTTOM:
+                return getAdjacentBottomCell(cell, board);
+            case RIGHT:
+                return getAdjacentRightCell(cell, board);
+            case LEFT:
+                return getAdjacentLeftCell(cell, board);
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public List<Cell> getRange(Cell start, Cell end, Board board) {
         Axis axis = getAxis(start, end);
+
+        if (start.compareTo(end) > 0) {
+            Cell temp = start;
+            start = end;
+            end = temp;
+        }
+
         Cell bStart = findBoardCell(start, board);
         Cell bEnd = findBoardCell(end, board);
         switch (axis) {
@@ -78,7 +96,7 @@ public class BattleshipCellService implements CellService {
         int length = getRangeLength(start, end);
         for (int i = 0; i < length; i++) {
             String toFind = String.format("%s%s", charToString(toCharCode(start.getRow()) + i), start.getColumn());
-            Cell cell = findBoardCell(toCell(toFind), board);
+            Cell cell = findBoardCell(stringToCell(toFind), board);
             list.add(cell);
         }
         return list;
@@ -90,31 +108,27 @@ public class BattleshipCellService implements CellService {
         int length = getRangeLength(start, end);
         for (int i = 0; i < length; i++) {
             String toFind = String.format("%s%s", start.getRow(), Integer.parseInt(start.getColumn()) + i);
-            Cell cell = findBoardCell(toCell(toFind), board);
+            Cell cell = findBoardCell(stringToCell(toFind), board);
             list.add(cell);
         }
         return list;
     }
 
-    @Override
-    public Cell toCell(String cell) {
-        return new Cell(cell.substring(0, 1), cell.substring(1));
+    // TODO extract getting cell string to method with Offset bean
+    private Cell getAdjacentTopCell(Cell cell, Board board) {
+        return firstCell.getRow().equals(cell.getRow()) ? board.getCell(cellToString(cell)) : board.getCell(charToString(toCharCode(cell.getRow()) - 1) + cell.getColumn());
     }
 
-    private Cell getAdjacentTopCell(Cell cell) {
-        return firstCell.getRow().equals(cell.getRow()) ? cell : toCell(charToString(toCharCode(cell.getRow()) - 1) + cell.getColumn());
+    private Cell getAdjacentBottomCell(Cell cell, Board board) {
+        return lastCell.getRow().equals(cell.getRow()) ? board.getCell(cellToString(cell)) : board.getCell(charToString(toCharCode(cell.getRow()) + 1) + cell.getColumn());
     }
 
-    private Cell getAdjacentBottomCell(Cell cell) {
-        return lastCell.getRow().equals(cell.getRow()) ? cell : toCell(charToString(toCharCode(cell.getRow()) + 1) + cell.getColumn());
+    private Cell getAdjacentRightCell(Cell cell, Board board) {
+        return lastCell.getColumn().equals(cell.getColumn()) ? board.getCell(cellToString(cell)) : board.getCell(cell.getRow() + (toCharCode(cell.getColumn()) + 1));
     }
 
-    private Cell getAdjacentRightCell(Cell cell) {
-        return lastCell.getColumn().equals(cell.getColumn()) ? cell : toCell(cell.getRow() + (toCharCode(cell.getColumn()) + 1));
-    }
-
-    private Cell getAdjacentLeftCell(Cell cell) {
-        return firstCell.getColumn().equals(cell.getColumn()) ? cell : toCell(cell.getRow() + (toCharCode(cell.getColumn()) - 1));
+    private Cell getAdjacentLeftCell(Cell cell, Board board) {
+        return firstCell.getColumn().equals(cell.getColumn()) ? board.getCell(cellToString(cell)) : board.getCell(cell.getRow() + (toCharCode(cell.getColumn()) - 1));
     }
 
     private Cell findBoardCell(Cell cell, Board board) throws InputMismatchException {

@@ -50,6 +50,7 @@ public class BattleshipGameService implements GameService {
         playerService.initPlayers();
 
         // change players name
+        // TODO make names unique
         currentPlayer = playerService.getCurrentPlayer();
         for (int i = 0; i < playerService.getNumOfPlayers(); i++) {
             System.out.printf("\n%s enter your name\n%s", currentPlayer.getName(), inputPlaceholder);
@@ -66,16 +67,22 @@ public class BattleshipGameService implements GameService {
     @Override
     public void initShips() {
         int numOfPlayers = playerService.getNumOfPlayers();
-        System.out.println(separator);
         for (int i = 0; i < numOfPlayers; i++) {
-            System.out.println(String.format("%s place your ships", currentPlayer.getName()));
             playerService.initShipsForPlayer(currentPlayer);
             currentPlayer = playerService.getNextPlayer();
+            if (i + 1 < numOfPlayers) {
+                System.out.println(String.format("Press enter to pass the turn to %s", currentPlayer.getName()));
+            } else {
+                System.out.print("\nPress enter to start the game");
+            }
+            System.out.print(UserInputService.userInputPlaceholder + inputService.getInput());
+            System.out.println(UserInputService.verticalDots);
         }
     }
 
     @Override
     public void play() {
+        System.out.println("\n\t\t *** THE BATTLESHIP GAME STARTS ***\n");
         boolean isFinished = true;
         while (!isFinished) {
             // TODO implement game

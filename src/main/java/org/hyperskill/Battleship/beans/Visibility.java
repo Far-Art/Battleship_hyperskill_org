@@ -1,5 +1,5 @@
 package org.hyperskill.Battleship.beans;
 
-public enum ShipVisibility {
+public enum Visibility {
     VISIBLE, HIDDEN
 }

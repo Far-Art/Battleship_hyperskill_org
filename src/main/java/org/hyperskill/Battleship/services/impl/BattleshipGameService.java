@@ -4,8 +4,11 @@ import org.hyperskill.Battleship.beans.Player;
 import org.hyperskill.Battleship.config.GameConfig;
 import org.hyperskill.Battleship.services.interfaces.GameService;
 import org.hyperskill.Battleship.services.interfaces.PlayerService;
+import org.hyperskill.Battleship.services.interfaces.ShootingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.stream.Collectors.joining;
 
@@ -13,6 +16,10 @@ import static java.util.stream.Collectors.joining;
 public class BattleshipGameService implements GameService {
 
     private final UserInputService inputService;
+
+    private final RetryService retryService;
+
+    private final ShootingService shootingService;
 
     private final int minPlayers;
 
@@ -23,9 +30,11 @@ public class BattleshipGameService implements GameService {
     private Player currentPlayer;
 
     @Autowired
-    public BattleshipGameService(GameConfig config, UserInputService inputService, PlayerService playerService) {
+    public BattleshipGameService(GameConfig config, UserInputService inputService, PlayerService playerService, RetryService retryService, ShootingService shootingService) {
         this.inputService = inputService;
         this.playerService = playerService;
+        this.retryService = retryService;
+        this.shootingService = shootingService;
         this.minPlayers = config.getMinPlayers();
         this.maxPlayers = config.getMaxPlayers();
     }
@@ -34,30 +43,31 @@ public class BattleshipGameService implements GameService {
     @Override
     public void initPlayers() {
         // set number of players
-        while (true) {
-            System.out.printf("\nEnter number of players between %s and %s\n", minPlayers, maxPlayers/*, inputPlaceholder*/);
-            try {
-                playerService.setNumOfPlayers(Integer.parseInt(inputService.getInput()));
-                break;
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-            }
-        }
+        System.out.printf("Enter number of players between %s and %s\n", minPlayers, maxPlayers);
+        retryService.retryWhile(() -> {
+            playerService.setNumOfPlayers(Integer.parseInt(inputService.getInput()));
+            return true;
+        }, 5, () -> {
+            playerService.setNumOfPlayers(minPlayers);
+            System.out.println(String.format("Players quantity set to %s", minPlayers));
+            return null;
+        });
         playerService.initPlayers();
 
         // change players name
-        // TODO make names unique
         currentPlayer = playerService.getCurrentPlayer();
         for (int i = 0; i < playerService.getNumOfPlayers(); i++) {
-            System.out.printf("\n%s enter your name\n", currentPlayer.getName()/*, */);
-            String name = inputService.getInput();
-            name = name.isBlank() ? currentPlayer.getName().strip() : name.strip();
-            boolean nameChanged = !name.equals(currentPlayer.getName());
-            System.out.println(String.format("* %s name %s %s", currentPlayer.getName(), nameChanged ? "set to" : "unchanged", nameChanged ? name : ""));
-            currentPlayer.setName(name);
+            System.out.println(String.format("%s enter your name", currentPlayer.getName()));
+            retryService.retryWhile(() -> {
+                playerService.changeName(currentPlayer, inputService.getInput());
+                return true;
+            }, 5, () -> {
+                System.out.println(String.format("%s name left unchanged", currentPlayer.getName()));
+                return null;
+            });
+            System.out.println(UserInputService.lineSeparator);
             currentPlayer = playerService.advanceCurrentPlayer();
         }
-        System.out.println();
     }
 
     @Override
@@ -71,7 +81,7 @@ public class BattleshipGameService implements GameService {
             } else {
                 System.out.print("\nPress enter to start the game");
             }
-            System.out.print(/*UserInputService.userInputPlaceholder + */inputService.getInput());
+            inputService.getInput();
             System.out.println(UserInputService.verticalDots);
         }
     }
@@ -79,21 +89,31 @@ public class BattleshipGameService implements GameService {
     @Override
     public void play() {
         System.out.println("\n\t\t *** THE BATTLESHIP GAME STARTS ***\n");
-        boolean isFinished = true;
-        int numOfPlayers = playerService.getNumOfPlayers();
         Player player = currentPlayer;
-        Player opponent;
-        if (numOfPlayers > 2) {
+        AtomicReference<Player> opponent = new AtomicReference<>();
+        if (playerService.getNumOfPlayers() > 2) {
             System.out.println(String.format("%s choose your opponent [%s]", player.getName(), playerService.getOpponents().stream().map(Player::getName).collect(joining(","))));
-            // TODO after implementing retry input service, place it here
-            opponent = playerService.getPlayer(inputService.getInput());
+            retryService.retryWhile(() -> {
+                opponent.set(playerService.getPlayer(inputService.getInput()));
+                return true;
+            });
         } else {
-            opponent = playerService.getNextPlayer();
+            opponent.set(playerService.getNextPlayer());
         }
 
+        // TODO implement with retry service ?
+        boolean isFinished = false;
         while (!isFinished) {
             // TODO implement game
+            takeTurn(opponent.get());
         }
         System.out.println("game finished");
+    }
+
+    private void takeTurn(Player opponent) {
+        System.out.println(String.format("%s shoot at %s", currentPlayer.getName(), opponent.getName()));
+        // TODO implement retry service
+        shootingService.shootAt(opponent, inputService.getInput());
+        playerService.advanceCurrentPlayer();
     }
 }

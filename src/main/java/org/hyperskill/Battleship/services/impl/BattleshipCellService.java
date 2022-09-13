@@ -41,7 +41,6 @@ public class BattleshipCellService implements CellService {
         return cell != null ? cell.getRow() + cell.getColumn() : null;
     }
 
-
     @Override
     public List<List<Cell>> createBoardField() {
         List<List<Cell>> boardCells = new ArrayList<>(boardSize);

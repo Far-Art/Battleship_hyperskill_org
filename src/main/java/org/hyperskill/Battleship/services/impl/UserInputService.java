@@ -30,7 +30,6 @@ public class UserInputService {
         })) {
             System.out.print(userInputPlaceholder);
             String input = scanner.nextLine();
-            System.out.println();
             return input;
         }
     }

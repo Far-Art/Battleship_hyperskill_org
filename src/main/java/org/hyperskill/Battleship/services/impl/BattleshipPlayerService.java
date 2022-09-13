@@ -49,6 +49,7 @@ public class BattleshipPlayerService implements PlayerService {
 
     @Override
     public Player advanceCurrentPlayer() {
+        // TODO implement here console asking to press enter and pass the turn ? (with prompt overload?)
         currentTurnPlayerIndex = getNextPlayerIndex();
         currentTurnPlayer = players.get(currentTurnPlayerIndex);
         return currentTurnPlayer;
@@ -86,26 +87,29 @@ public class BattleshipPlayerService implements PlayerService {
     }
 
     public void initShipsForPlayer(Player player) {
-        System.out.println(UserInputService.lineSeparator);
-        System.out.println(String.format("%s place your ships", player.getName()));
+        System.out.println(String.format("\n%s place your ships", player.getName()));
         Board board = player.getBoard();
         List<ShipType> shipTypes = board.getGameShipPattern();
         board.print(Visibility.VISIBLE);
         for (ShipType shipType : shipTypes) {
             player.placement().addShipToBoard(shipType);
             board.print(Visibility.VISIBLE);
-            System.out.println();
         }
         System.out.println(String.format("%s you all set", player.getName()));
     }
 
     @Override
     public void changeName(Player player, String newName) {
-        // TODO implement setting player names through this method
-        boolean isUnique = players.stream().anyMatch(p -> p.getName().equalsIgnoreCase(newName));
-        if (!isUnique)
+        if (!newName.isBlank() && getOpponents().stream().anyMatch(p -> p.getName().equalsIgnoreCase(newName)))
             throw new InputMismatchException(String.format("Name [%s] already taken", newName));
-        player.setName(newName);
+
+        String oldName = player.getName();
+        if (newName.isBlank() || oldName.equalsIgnoreCase(newName)) {
+            System.out.println(String.format("%s name left unchanged", oldName));
+        } else {
+            player.setName(newName);
+            System.out.println(String.format("* %s name changed to %s", oldName, newName));
+        }
     }
 
     private int getNextPlayerIndex() {

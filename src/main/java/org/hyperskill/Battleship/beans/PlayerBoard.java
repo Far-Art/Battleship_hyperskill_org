@@ -44,7 +44,7 @@ public class PlayerBoard implements Board {
         List<Cell> flatField = field.stream().flatMap(Collection::stream).collect(toList());
         List<Cell> found = new ArrayList<>();
         for (String cell : cells) {
-            found.addAll(flatField.stream().filter(c -> cellService.cellToString(c).equals(cell)).collect(toList()));
+            found.addAll(flatField.stream().filter(c -> cellService.cellToString(c).equalsIgnoreCase(cell)).collect(toList()));
         }
         return found;
     }
@@ -56,12 +56,14 @@ public class PlayerBoard implements Board {
 
     public void print(Visibility visibility) {
         StringBuilder builder = new StringBuilder();
+        builder.append(System.lineSeparator());
         builder.append(getFieldRowAsString(field.get(0), true, visibility));
         builder.append(System.lineSeparator());
         for (int i = 0; i < field.size(); i++) {
             builder.append(getFieldRowAsString(field.get(i), false, visibility));
             if (i + 1 < field.size()) builder.append(System.lineSeparator());
         }
+        builder.append(System.lineSeparator());
         System.out.println(builder);
     }
 

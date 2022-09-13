@@ -8,18 +8,18 @@ public class Cell implements Comparable<Cell> {
     private String symbol;
 
     public Cell(String row, String column) {
-        this.row = row;
-        this.column = column;
+        this.row = row.toUpperCase();
+        this.column = column.toUpperCase();
     }
 
     public Cell(String cell) {
-        this.row = cell.substring(0, 1);
-        this.column = cell.substring(1);
+        this.row = cell.substring(0, 1).toUpperCase();
+        this.column = cell.substring(1).toUpperCase();
     }
 
     public Cell(String row, String column, String symbol) {
-        this.row = row;
-        this.column = column;
+        this.row = row.toUpperCase();
+        this.column = column.toUpperCase();
         this.symbol = symbol;
     }
 

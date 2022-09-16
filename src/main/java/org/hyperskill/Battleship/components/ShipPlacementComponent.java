@@ -66,6 +66,10 @@ public class ShipPlacementComponent {
         addShipToBoard(shipType, null);
     }
 
+    public boolean isAllShipsDestroyed() {
+        return shipsOnField.size() > 0 && shipsOnField.stream().allMatch(Ship::isDestroyed);
+    }
+
     public void addShipToBoard(ShipType shipType, List<Cell> location) {
         if (location != null) {
             addShipToField(new BattleShip(config, shipType, location));

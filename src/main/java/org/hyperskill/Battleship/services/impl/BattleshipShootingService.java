@@ -2,14 +2,15 @@ package org.hyperskill.Battleship.services.impl;
 
 import org.hyperskill.Battleship.beans.Cell;
 import org.hyperskill.Battleship.beans.Player;
-import org.hyperskill.Battleship.beans.Visibility;
+import org.hyperskill.Battleship.beans.Ship;
 import org.hyperskill.Battleship.config.GameConfig;
 import org.hyperskill.Battleship.services.interfaces.CellService;
 import org.hyperskill.Battleship.services.interfaces.PlayerService;
+import org.hyperskill.Battleship.services.interfaces.PrintService;
 import org.hyperskill.Battleship.services.interfaces.ShootingService;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.InputMismatchException;
 
 @Service
 public class BattleshipShootingService implements ShootingService {
@@ -20,6 +21,9 @@ public class BattleshipShootingService implements ShootingService {
 
     private final RetryService retryService;
 
+
+    private final PrintService printService;
+
     private final String ship;
 
     private final String sea;
@@ -28,10 +32,11 @@ public class BattleshipShootingService implements ShootingService {
 
     private final String hit;
 
-    public BattleshipShootingService(PlayerService playerService, CellService cellService, RetryService retryService, GameConfig config) {
+    public BattleshipShootingService(PlayerService playerService, CellService cellService, RetryService retryService, PrintService printService, GameConfig config) {
         this.playerService = playerService;
         this.cellService = cellService;
         this.retryService = retryService;
+        this.printService = printService;
         this.ship = config.getSymbolShip();
         this.sea = config.getSymbolSea();
         this.miss = config.getSymbolMiss();
@@ -39,28 +44,35 @@ public class BattleshipShootingService implements ShootingService {
     }
 
     @Override
-    public void shootAt(Player player, String cell) {
-        AtomicReference<Cell> shotCell = new AtomicReference<>();
-        retryService.retryWhile(() -> {
-            shotCell.set(player.getBoard().getCell(cell));
-            return true;
-        });
+    public boolean shootAt(Player playersOpponent, String cell) {
+        Cell shotCell = playersOpponent.getBoard().getCell(cell);
 
-        switch (shotCell.get().getSymbol()) {
-            // TODO implement new java 17 switch case
+        String symbol = shotCell.getSymbol();
+        Ship hitShip = playersOpponent.placement().getShipByCell(shotCell);
+
+        if (symbol.equals(miss)) {
+            throw new InputMismatchException("Missed cell won't contain a ship in the future");
+        } else if (symbol.equals(hit)) {
+            if (hitShip.isDestroyed()) {
+                throw new InputMismatchException(String.format("%s's %s already sunk", playersOpponent.getName(), hitShip.getCategory().getName()));
+            }
+            throw new InputMismatchException("This ship already hit");
         }
 
-        // TODO validate cell input
-        // TODO implement checking for already hit cells
-        // TODO implement checking if ship destroyed
-        // TODO provide current player
-        if (shotCell.get().getSymbol().equals(sea)) {
-            shotCell.get().setSymbol(miss);
+        printService.printPlayerBoards(playerService.getCurrentPlayer(), playersOpponent);
+
+        if (symbol.equals(sea)) {
+            shotCell.setSymbol(miss);
             System.out.println("You missed!");
-        } else if (shotCell.get().getSymbol().equals(ship)) {
-            shotCell.get().setSymbol(hit);
-            System.out.println("You hit a ship!");
+        } else if (symbol.equals(ship)) {
+            shotCell.setSymbol(hit);
+            if (hitShip.isDestroyed()) {
+                System.out.printf("You sunk %s of %s!%n", hitShip.getCategory().getName(), playersOpponent.getName());
+            } else {
+                System.out.println("You hit a ship!");
+            }
         }
-        player.getBoard().print(Visibility.HIDDEN);
+        System.out.println();
+        return true;
     }
 }

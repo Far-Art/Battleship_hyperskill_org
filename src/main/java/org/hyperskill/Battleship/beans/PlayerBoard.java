@@ -19,7 +19,6 @@ public class PlayerBoard implements Board {
     private final List<ShipType> gameShipPattern;
     private final List<List<Cell>> field;
 
-
     public PlayerBoard(GameConfig config, CellService cellService) {
         this.cellService = cellService;
         this.field = cellService.createBoardField();
@@ -50,7 +49,6 @@ public class PlayerBoard implements Board {
         }
         return found;
     }
-
 
     public List<List<Cell>> getField() {
         return field;

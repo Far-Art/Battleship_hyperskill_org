@@ -53,18 +53,13 @@ public class BattleshipCellService implements CellService {
 
     @Override
     public Cell getAdjacent(Cell cell, Board board, Offset offset) {
-        switch (offset) {
-            case TOP:
-                return getAdjacentTopCell(cell, board);
-            case BOTTOM:
-                return getAdjacentBottomCell(cell, board);
-            case RIGHT:
-                return getAdjacentRightCell(cell, board);
-            case LEFT:
-                return getAdjacentLeftCell(cell, board);
-            default:
-                return null;
-        }
+        return switch (offset) {
+            case TOP -> getAdjacentTopCell(cell, board);
+            case BOTTOM -> getAdjacentBottomCell(cell, board);
+            case RIGHT -> getAdjacentRightCell(cell, board);
+            case LEFT -> getAdjacentLeftCell(cell, board);
+            default -> null;
+        };
     }
 
     @Override
@@ -79,16 +74,12 @@ public class BattleshipCellService implements CellService {
 
         Cell bStart = findBoardCell(start, board);
         Cell bEnd = findBoardCell(end, board);
-        switch (axis) {
-            case HORIZONTAL:
-                return getHorizontalRange(bStart, bEnd, board);
-            case VERTICAL:
-                return getVerticalRange(bStart, bEnd, board);
-            default:
-                return null;
-        }
+        return switch (axis) {
+            case HORIZONTAL -> getHorizontalRange(bStart, bEnd, board);
+            case VERTICAL -> getVerticalRange(bStart, bEnd, board);
+            default -> null;
+        };
     }
-
 
     private List<Cell> getVerticalRange(Cell start, Cell end, Board board) {
         List<Cell> list = new ArrayList<>();
@@ -153,8 +144,8 @@ public class BattleshipCellService implements CellService {
             startSymbol = toCharCode(start.getRow());
             endSymbol = toCharCode(end.getRow());
         } else if (axis == Axis.HORIZONTAL) {
-            startSymbol = Integer.valueOf(start.getColumn());
-            endSymbol = Integer.valueOf(end.getColumn());
+            startSymbol = Integer.parseInt(start.getColumn());
+            endSymbol = Integer.parseInt(end.getColumn());
         }
         // swap start and end if needed
         int temp = endSymbol;

@@ -37,16 +37,23 @@ public class Player {
         return board;
     }
 
+    public boolean isLost() {
+        return isLost;
+    }
+
+    public void setLost(boolean lost) {
+        isLost = lost;
+    }
+
     public ShipPlacementComponent placement() {
         return placement;
     }
 
     @Override
     public String toString() {
-        String sb = "Player{" + "playerId=" + playerId +
+        return "Player{" + "playerId=" + playerId +
                 ", name='" + name + '\'' +
                 ", isLost=" + isLost +
                 '}';
-        return sb;
     }
 }

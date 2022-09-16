@@ -18,18 +18,21 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class BattleshipPlayerService implements PlayerService {
 
+    private final UserInputService inputService;
+
     private final int minPlayers;
     private final int maxPlayers;
     private final List<Player> players;
     private final ApplicationContext context;
     private int numOfLostPlayers;
-    private int numOfPlayers;
+    private int initialNumOfPlayers;
     private Player currentTurnPlayer;
 
     private int currentTurnPlayerIndex;
 
 
-    public BattleshipPlayerService(GameConfig config, ApplicationContext context) {
+    public BattleshipPlayerService(UserInputService inputService, GameConfig config, ApplicationContext context) {
+        this.inputService = inputService;
         this.minPlayers = config.getMinPlayers();
         this.maxPlayers = config.getMaxPlayers();
         this.context = context;
@@ -44,12 +47,27 @@ public class BattleshipPlayerService implements PlayerService {
     }
 
     public Player getNextPlayer() {
-        return players.get(getNextPlayerIndex());
+        // TODO rework this logic of getting next player
+        String playerName = currentTurnPlayer.getName();
+        Player player = players.get(getNextPlayerIndex());
+        while (player.isLost() && getNumOfActivePlayers() > 1 && !currentTurnPlayer.getName().equals(playerName)) {
+            player = advanceCurrentPlayer(false);
+        }
+        return player;
     }
 
     @Override
     public Player advanceCurrentPlayer() {
-        // TODO implement here console asking to press enter and pass the turn ? (with prompt overload?)
+        return advanceCurrentPlayer(true);
+    }
+
+    @Override
+    public Player advanceCurrentPlayer(boolean prompt) {
+        updatePlayersStatus();
+        if (prompt) {
+            System.out.printf("Press enter to pass the turn to %s%n", getNextPlayer().getName());
+            inputService.getInput();
+        }
         currentTurnPlayerIndex = getNextPlayerIndex();
         currentTurnPlayer = players.get(currentTurnPlayerIndex);
         return currentTurnPlayer;
@@ -64,23 +82,28 @@ public class BattleshipPlayerService implements PlayerService {
         return numOfLostPlayers;
     }
 
-    public int getNumOfPlayers() {
-        return numOfPlayers;
+    @Override
+    public int getNumOfActivePlayers() {
+        return initialNumOfPlayers - numOfLostPlayers;
     }
 
-    public void setNumOfPlayers(int numOfPlayers) throws InputMismatchException {
-        if (numOfPlayers > maxPlayers || numOfPlayers < minPlayers)
+    public int getInitialNumOfPlayers() {
+        return initialNumOfPlayers;
+    }
+
+    public void setInitialNumOfPlayers(int initialNumOfPlayers) throws InputMismatchException {
+        if (initialNumOfPlayers > maxPlayers || initialNumOfPlayers < minPlayers)
             throw new InputMismatchException(String.format("Number of players must be between %s and %s", minPlayers, maxPlayers));
-        this.numOfPlayers = numOfPlayers;
+        this.initialNumOfPlayers = initialNumOfPlayers;
     }
 
     @Override
-    public List<Player> getOpponents() {
-        return players.stream().filter(p -> p != currentTurnPlayer).collect(toList());
+    public List<Player> getActiveOpponents() {
+        return players.stream().filter(p -> p != currentTurnPlayer && !p.isLost()).collect(toList());
     }
 
     public void initPlayers() {
-        for (int i = 0; i < numOfPlayers; i++) {
+        for (int i = 0; i < initialNumOfPlayers; i++) {
             Player player = context.getBean(Player.class);
             players.add(player);
         }
@@ -100,7 +123,7 @@ public class BattleshipPlayerService implements PlayerService {
 
     @Override
     public void changeName(Player player, String newName) {
-        if (!newName.isBlank() && getOpponents().stream().anyMatch(p -> p.getName().equalsIgnoreCase(newName)))
+        if (!newName.isBlank() && getActiveOpponents().stream().anyMatch(p -> p.getName().equalsIgnoreCase(newName)))
             throw new InputMismatchException(String.format("Name [%s] already taken", newName));
 
         String oldName = player.getName();
@@ -114,7 +137,7 @@ public class BattleshipPlayerService implements PlayerService {
 
     private int getNextPlayerIndex() {
         int nextPlayerIndex = currentTurnPlayerIndex + 1;
-        if (nextPlayerIndex == numOfPlayers) {
+        if (nextPlayerIndex == initialNumOfPlayers) {
             nextPlayerIndex = 0;
         }
         return nextPlayerIndex;
@@ -123,5 +146,11 @@ public class BattleshipPlayerService implements PlayerService {
     private void initCurrentPlayer() {
         currentTurnPlayerIndex = 0;
         currentTurnPlayer = players.get(currentTurnPlayerIndex);
+    }
+
+    private void updatePlayersStatus() {
+        List<Player> lost = players.stream().filter(p -> p.placement().isAllShipsDestroyed()).toList();
+        numOfLostPlayers = lost.size();
+        lost.forEach(p -> p.setLost(true));
     }
 }

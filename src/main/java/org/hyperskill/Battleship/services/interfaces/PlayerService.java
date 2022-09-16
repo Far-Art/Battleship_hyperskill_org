@@ -18,14 +18,18 @@ public interface PlayerService {
 
     Player advanceCurrentPlayer();
 
+    Player advanceCurrentPlayer(boolean prompt);
+
     Player getPlayer(String name);
 
     int getNumOfLostPlayers();
 
-    int getNumOfPlayers();
+    int getNumOfActivePlayers();
 
-    void setNumOfPlayers(int numOfPlayers);
+    int getInitialNumOfPlayers();
 
-    List<Player> getOpponents();
+    void setInitialNumOfPlayers(int initialNumOfPlayers);
+
+    List<Player> getActiveOpponents();
 
 }

@@ -10,14 +10,18 @@ import java.util.function.Supplier;
 public class RetryService {
 
     public RetryService retryWhile(Supplier<Boolean> supplier) {
-        return retryWhile(supplier, -1, null);
+        return retry(supplier, -1, null);
     }
 
-    public RetryService retryWhile(Supplier<Boolean> supplier, int retryTimes) {
-        return retryWhile(supplier, retryTimes, null);
+    public RetryService retryFor(Supplier<Boolean> supplier, int retryTimes) {
+        return retry(supplier, retryTimes, null);
     }
 
-    public RetryService retryWhile(Supplier<Boolean> supplier, int retryTimes, Supplier<Void> defaultCase) {
+    public RetryService retryFor(Supplier<Boolean> supplier, int retryTimes, Supplier<Void> defaultCase) {
+        return retry(supplier, retryTimes, defaultCase);
+    }
+
+    private RetryService retry(Supplier<Boolean> supplier, int retryTimes, Supplier<Void> defaultCase) {
         boolean retry;
         boolean stop;
         int retries = 1;

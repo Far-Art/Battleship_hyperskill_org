@@ -5,5 +5,5 @@ import org.hyperskill.Battleship.beans.Player;
 
 public interface ShootingService {
 
-    void shootAt(Player player, String cell);
+    boolean shootAt(Player player, String cell);
 }

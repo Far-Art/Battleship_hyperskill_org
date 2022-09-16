@@ -6,7 +6,8 @@ plugins {
 
 group = 'org.hyperskill'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+sourceCompatibility = "17.PREVIEW"
+//targetCompatibility = JavaVersion.VERSION_17_PREVIEW
 
 configurations {
 	compileOnly {

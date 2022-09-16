@@ -28,5 +28,5 @@ public interface CellService {
     List<List<Cell>> createBoardField();
 
     List<Cell> getRange(Cell start, Cell end, Board board);
-
+    
 }

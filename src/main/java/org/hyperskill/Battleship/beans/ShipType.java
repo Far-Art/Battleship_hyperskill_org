@@ -7,10 +7,10 @@ public enum ShipType {
     CRUISER("Cruiser", 3),
     DESTROYER("Destroyer", 2);
 
-    private String name;
-    private int size;
+    private final String name;
+    private final int size;
 
-    private ShipType(String name, int size) {
+    ShipType(String name, int size) {
         this.name = name;
         this.size = size;
     }

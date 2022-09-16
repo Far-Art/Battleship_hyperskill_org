@@ -43,11 +43,10 @@ public class Player {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Player{");
-        sb.append("playerId=").append(playerId);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", isLost=").append(isLost);
-        sb.append('}');
-        return sb.toString();
+        String sb = "Player{" + "playerId=" + playerId +
+                ", name='" + name + '\'' +
+                ", isLost=" + isLost +
+                '}';
+        return sb;
     }
 }

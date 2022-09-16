@@ -29,7 +29,7 @@ public class BattleshipPlayerService implements PlayerService {
     private int currentTurnPlayerIndex;
 
 
-    public BattleshipPlayerService(GameConfig config, UserInputService inputService, ApplicationContext context) {
+    public BattleshipPlayerService(GameConfig config, ApplicationContext context) {
         this.minPlayers = config.getMinPlayers();
         this.maxPlayers = config.getMaxPlayers();
         this.context = context;
@@ -87,7 +87,7 @@ public class BattleshipPlayerService implements PlayerService {
     }
 
     public void initShipsForPlayer(Player player) {
-        System.out.println(String.format("\n%s place your ships", player.getName()));
+        System.out.printf("\n%s place your ships%n", player.getName());
         Board board = player.getBoard();
         List<ShipType> shipTypes = board.getGameShipPattern();
         board.print(Visibility.VISIBLE);
@@ -95,7 +95,7 @@ public class BattleshipPlayerService implements PlayerService {
             player.placement().addShipToBoard(shipType);
             board.print(Visibility.VISIBLE);
         }
-        System.out.println(String.format("%s you all set", player.getName()));
+        System.out.printf("%s you all set%n", player.getName());
     }
 
     @Override
@@ -105,15 +105,14 @@ public class BattleshipPlayerService implements PlayerService {
 
         String oldName = player.getName();
         if (newName.isBlank() || oldName.equalsIgnoreCase(newName)) {
-            System.out.println(String.format("%s name left unchanged", oldName));
+            System.out.printf("* %s name left unchanged%n", oldName);
         } else {
             player.setName(newName);
-            System.out.println(String.format("* %s name changed to %s", oldName, newName));
+            System.out.printf("* %s name changed to %s%n", oldName, newName);
         }
     }
 
     private int getNextPlayerIndex() {
-        // TODO replace with modulo
         int nextPlayerIndex = currentTurnPlayerIndex + 1;
         if (nextPlayerIndex == numOfPlayers) {
             nextPlayerIndex = 0;

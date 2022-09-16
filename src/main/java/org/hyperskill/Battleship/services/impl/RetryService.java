@@ -32,7 +32,7 @@ public class RetryService {
             stop = retryTimes >= 0 && retries == retryTimes;
 
             if (retry && !stop) {
-                System.out.println(String.format("Please try again%s", retryTimes >= 0 ? String.format(" (%s %s left)", (retryTimes - retries), retryTimes - retries == 1 ? "try" : "tries") : ""));
+                System.out.printf("Please try again%s%n", retryTimes >= 0 ? String.format(" (%s %s left)", (retryTimes - retries), retryTimes - retries == 1 ? "try" : "tries") : "");
             } else if (stop && defaultCase != null) {
                 defaultCase.get();
             } else if (stop) {

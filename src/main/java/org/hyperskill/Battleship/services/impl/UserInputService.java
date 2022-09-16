@@ -16,7 +16,7 @@ public class UserInputService {
     static {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 20; i++) {
-            builder.append(newLine + ".");
+            builder.append(newLine).append(".");
         }
         verticalDots = builder.toString();
     }
@@ -29,8 +29,7 @@ public class UserInputService {
             }
         })) {
             System.out.print(userInputPlaceholder);
-            String input = scanner.nextLine();
-            return input;
+            return scanner.nextLine();
         }
     }
 }

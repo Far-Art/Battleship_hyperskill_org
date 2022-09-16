@@ -6,9 +6,9 @@ import org.hyperskill.Battleship.services.interfaces.CellService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 
 public class PlayerBoard implements Board {
 
@@ -35,16 +35,18 @@ public class PlayerBoard implements Board {
     @Override
     public Cell getCell(String cell) {
         List<Cell> cells = getCells(cell);
-        return cells.size() > 0 ? cells.get(0) : null;
+        if (cells.size() == 0)
+            throw new NoSuchElementException("Cell [" + cell + "] not found");
+        return cells.get(0);
     }
 
     @Override
     public List<Cell> getCells(String... cells) {
         // TODO can be optimized?
-        List<Cell> flatField = field.stream().flatMap(Collection::stream).collect(toList());
+        List<Cell> flatField = field.stream().flatMap(Collection::stream).toList();
         List<Cell> found = new ArrayList<>();
         for (String cell : cells) {
-            found.addAll(flatField.stream().filter(c -> cellService.cellToString(c).equalsIgnoreCase(cell)).collect(toList()));
+            found.addAll(flatField.stream().filter(c -> cellService.cellToString(c).equalsIgnoreCase(cell)).toList());
         }
         return found;
     }
@@ -68,7 +70,7 @@ public class PlayerBoard implements Board {
     }
 
     private String getFieldRowAsString(List<Cell> row, boolean isFirst, Visibility visibility) {
-        StringBuilder builder = new StringBuilder(isFirst ? "  " : row.stream().findFirst().get().getRow() + " ");
+        StringBuilder builder = new StringBuilder(isFirst ? "  " : row.stream().findFirst().orElseThrow(() -> new NoSuchElementException("Row not found")).getRow() + " ");
         if (isFirst) builder.append(row.stream().map(Cell::getColumn).collect(joining(" ")));
         else
             builder.append(row.stream().map(c -> c.getSymbol().equals(shipCell) && visibility == Visibility.HIDDEN ? fogOfWar : c.getSymbol()).collect(joining(" ")));

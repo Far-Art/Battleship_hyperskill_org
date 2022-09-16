@@ -3,8 +3,8 @@ package org.hyperskill.Battleship.beans;
 import java.util.StringJoiner;
 
 public class Cell implements Comparable<Cell> {
-    private String row;
-    private String column;
+    private final String row;
+    private final String column;
     private String symbol;
 
     public Cell(String row, String column) {
@@ -26,11 +26,7 @@ public class Cell implements Comparable<Cell> {
     public String getRow() {
         return row;
     }
-
-    public void setRow(String row) {
-        this.row = row;
-    }
-
+    
     public String getColumn() {
         return column;
     }

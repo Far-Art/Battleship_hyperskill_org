@@ -7,17 +7,14 @@ import java.util.InputMismatchException;
 import java.util.List;
 
 public class BattleShip implements Ship {
-
-    private final GameConfig config;
     private final String hit;
     private final String ship;
-    private ShipType category;
-    private List<Cell> locationCells;
+    private final ShipType category;
+    private final List<Cell> locationCells;
 
 
     @Autowired
     public BattleShip(GameConfig config, ShipType category, List<Cell> locationCells) {
-        this.config = config;
         this.hit = config.getSymbolHit();
         this.ship = config.getSymbolShip();
         this.category = category;

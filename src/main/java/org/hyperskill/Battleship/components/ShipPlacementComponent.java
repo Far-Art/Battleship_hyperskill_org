@@ -73,7 +73,7 @@ public class ShipPlacementComponent {
             AtomicReference<Cell> start = new AtomicReference<>();
             AtomicReference<Cell> end = new AtomicReference<>();
 
-            System.out.println(String.format("Enter the coordinates of the %s (%d cells)", shipType.getName(), shipType.getSize()));
+            System.out.printf("Enter the coordinates of the %s (%d cells)%n", shipType.getName(), shipType.getSize());
             retryService.retryWhile(() -> {
                 String input = inputService.getInput().toUpperCase();
                 if (validateInput(input)) {

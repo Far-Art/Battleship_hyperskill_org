@@ -49,7 +49,7 @@ public class BattleshipGameService implements GameService {
             return true;
         }, 5, () -> {
             playerService.setNumOfPlayers(minPlayers);
-            System.out.println(String.format("Players quantity set to %s", minPlayers));
+            System.out.printf("Players quantity set to %s%n", minPlayers);
             return null;
         });
         playerService.initPlayers();
@@ -57,12 +57,12 @@ public class BattleshipGameService implements GameService {
         // change players name
         currentPlayer = playerService.getCurrentPlayer();
         for (int i = 0; i < playerService.getNumOfPlayers(); i++) {
-            System.out.println(String.format("%s enter your name", currentPlayer.getName()));
+            System.out.printf("%s enter your name%n", currentPlayer.getName());
             retryService.retryWhile(() -> {
                 playerService.changeName(currentPlayer, inputService.getInput());
                 return true;
             }, 5, () -> {
-                System.out.println(String.format("%s name left unchanged", currentPlayer.getName()));
+                System.out.printf("%s name left unchanged%n", currentPlayer.getName());
                 return null;
             });
             System.out.println(UserInputService.lineSeparator);
@@ -77,7 +77,7 @@ public class BattleshipGameService implements GameService {
             playerService.initShipsForPlayer(currentPlayer);
             currentPlayer = playerService.advanceCurrentPlayer();
             if (i + 1 < numOfPlayers) {
-                System.out.println(String.format("Press enter to pass the turn to %s", currentPlayer.getName()));
+                System.out.printf("Press enter to pass the turn to %s%n", currentPlayer.getName());
             } else {
                 System.out.print("\nPress enter to start the game");
             }
@@ -92,7 +92,7 @@ public class BattleshipGameService implements GameService {
         Player player = currentPlayer;
         AtomicReference<Player> opponent = new AtomicReference<>();
         if (playerService.getNumOfPlayers() > 2) {
-            System.out.println(String.format("%s choose your opponent [%s]", player.getName(), playerService.getOpponents().stream().map(Player::getName).collect(joining(","))));
+            System.out.printf("%s choose your opponent [%s]%n", player.getName(), playerService.getOpponents().stream().map(Player::getName).collect(joining(",")));
             retryService.retryWhile(() -> {
                 opponent.set(playerService.getPlayer(inputService.getInput()));
                 return true;
@@ -111,7 +111,7 @@ public class BattleshipGameService implements GameService {
     }
 
     private void takeTurn(Player opponent) {
-        System.out.println(String.format("%s shoot at %s", currentPlayer.getName(), opponent.getName()));
+        System.out.printf("%s shoot at %s%n", currentPlayer.getName(), opponent.getName());
         // TODO implement retry service
         shootingService.shootAt(opponent, inputService.getInput());
         playerService.advanceCurrentPlayer();

@@ -6,7 +6,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 public class ListUtils {
-    public static <T extends Collection> boolean containsAny(T list, T other) {
+    public static <T extends Collection<?>> boolean containsAny(T list, T other) {
         return other.stream().anyMatch(list::contains);
     }
 

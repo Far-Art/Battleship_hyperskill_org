@@ -9,12 +9,16 @@ import org.hyperskill.Battleship.services.interfaces.PlayerService;
 import org.hyperskill.Battleship.services.interfaces.ShootingService;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 @Service
 public class BattleshipShootingService implements ShootingService {
 
     private final PlayerService playerService;
 
     private final CellService cellService;
+
+    private final RetryService retryService;
 
     private final String ship;
 
@@ -24,9 +28,10 @@ public class BattleshipShootingService implements ShootingService {
 
     private final String hit;
 
-    public BattleshipShootingService(PlayerService playerService, CellService cellService, GameConfig config) {
+    public BattleshipShootingService(PlayerService playerService, CellService cellService, RetryService retryService, GameConfig config) {
         this.playerService = playerService;
         this.cellService = cellService;
+        this.retryService = retryService;
         this.ship = config.getSymbolShip();
         this.sea = config.getSymbolSea();
         this.miss = config.getSymbolMiss();
@@ -35,8 +40,13 @@ public class BattleshipShootingService implements ShootingService {
 
     @Override
     public void shootAt(Player player, String cell) {
-        Cell shotCell = player.getBoard().getCell(cell);
-        switch (shotCell.getSymbol()) {
+        AtomicReference<Cell> shotCell = new AtomicReference<>();
+        retryService.retryWhile(() -> {
+            shotCell.set(player.getBoard().getCell(cell));
+            return true;
+        });
+
+        switch (shotCell.get().getSymbol()) {
             // TODO implement new java 17 switch case
         }
 
@@ -44,11 +54,11 @@ public class BattleshipShootingService implements ShootingService {
         // TODO implement checking for already hit cells
         // TODO implement checking if ship destroyed
         // TODO provide current player
-        if (shotCell.getSymbol().equals(sea)) {
-            shotCell.setSymbol(miss);
+        if (shotCell.get().getSymbol().equals(sea)) {
+            shotCell.get().setSymbol(miss);
             System.out.println("You missed!");
-        } else if (shotCell.getSymbol().equals(ship)) {
-            shotCell.setSymbol(hit);
+        } else if (shotCell.get().getSymbol().equals(ship)) {
+            shotCell.get().setSymbol(hit);
             System.out.println("You hit a ship!");
         }
         player.getBoard().print(Visibility.HIDDEN);

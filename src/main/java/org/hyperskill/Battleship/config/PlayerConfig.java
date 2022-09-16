@@ -12,7 +12,7 @@ public class PlayerConfig {
 
     private static int playerNumber = 1;
 
-    private static String initialName = "Player";
+    private final static String initialName = "Player";
 
     @Bean
     @Scope("prototype")
